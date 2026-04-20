@@ -1,0 +1,126 @@
+-- 1. RESET DO BANCO DE DADOS
+DROP DATABASE IF EXISTS sus_medicamentos;
+CREATE DATABASE sus_medicamentos;
+USE sus_medicamentos;
+
+-- 2. CRIAÇÃO DAS ENTIDADES (TABELAS)
+
+CREATE TABLE medicamento (
+    id_medicamento INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE doenca (
+    id_doenca INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE preco (
+    id_preco INT PRIMARY KEY AUTO_INCREMENT,
+    id_medicamento INT,
+    valor_medio DECIMAL(10,2),
+    FOREIGN KEY (id_medicamento) REFERENCES medicamento(id_medicamento)
+);
+
+CREATE TABLE tratamento (
+    id_tratamento INT PRIMARY KEY AUTO_INCREMENT,
+    id_medicamento INT,
+    id_doenca INT,
+    FOREIGN KEY (id_medicamento) REFERENCES medicamento(id_medicamento),
+    FOREIGN KEY (id_doenca) REFERENCES doenca(id_doenca)
+);
+
+CREATE TABLE paciente (
+    id_paciente INT PRIMARY KEY AUTO_INCREMENT,
+    nome VARCHAR(100) NOT NULL,
+    cpf CHAR(11) UNIQUE NOT NULL,
+    data_nascimento DATE NOT NULL
+);
+
+CREATE TABLE prescricao (
+    id_prescricao INT PRIMARY KEY AUTO_INCREMENT,
+    id_paciente INT,
+    id_medicamento INT,
+    data_prescricao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    dosagem VARCHAR(100),
+    FOREIGN KEY (id_paciente) REFERENCES paciente(id_paciente),
+    FOREIGN KEY (id_medicamento) REFERENCES medicamento(id_medicamento)
+);
+
+-- 3. CARGA DE DADOS INICIAL
+
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- Inserindo 20 Medicamentos
+INSERT INTO medicamento (nome) VALUES
+('Paracetamol'), ('Ibuprofeno'), ('Dipirona'), ('Amoxicilina'), ('Azitromicina'),
+('Losartana'), ('Captopril'), ('Atenolol'), ('Metformina'), ('Insulina NPH'),
+('Omeprazol'), ('Ranitidina'), ('Hidroclorotiazida'), ('Salbutamol'), ('Prednisona'),
+('Fluoxetina'), ('Diazepam'), ('Ácido fólico'), ('Sulfato ferroso'), ('Benzilpenicilina');
+
+-- Inserindo 16 Doenças
+INSERT INTO doenca (nome) VALUES
+('Dor e febre'), ('Inflamação e dor'), ('Infecção bacteriana'), ('Infecções respiratórias'),
+('Hipertensão'), ('Problemas cardíacos'), ('Diabetes tipo 2'), ('Diabetes'),
+('Gastrite e refluxo'), ('Úlcera gástrica'), ('Asma'), ('Inflamações'),
+('Depressão'), ('Ansiedade'), ('Anemia'), ('Anemia ferropriva');
+
+-- Inserindo 15+ Pacientes
+INSERT INTO paciente (nome, cpf, data_nascimento) VALUES
+('Nicolas Caliel', '12345678901', '2007-03-01'),
+('Ana Silva Oliveira', '12398745601', '1985-05-12'),
+('Bruno Santos Ferreira', '23487654302', '1992-08-23'),
+('Carla Souza Lima', '34576543203', '1978-11-30'),
+('Daniela Martins Costa', '45665432104', '2001-02-15'),
+('Eduardo Rocha Almeida', '56754321005', '1965-07-09'),
+('Fernanda Alves Pereira', '67843210906', '1998-12-01'),
+('Gabriel Ribeiro Soares', '78932109807', '1954-03-25'),
+('Helena Castro Mendes', '89021098708', '1989-10-14'),
+('Igor Machado Vieira', '90110987609', '2005-06-20'),
+('Juliana Cardoso Dias', '01209876510', '1973-04-05'),
+('Kleber Lima Cavalcanti', '12312345611', '1982-09-18'),
+('Letícia Barbosa Ramos', '23423456712', '1995-01-30'),
+('Maurício Gomes Silva', '34534567813', '1968-11-11'),
+('Natália Borges Fonseca', '45645678914', '2003-05-22'),
+('Otávio Nogueira Luz', '56756789015', '1947-02-08');
+
+-- 4. VINCULANDO PREÇOS E TRATAMENTOS (Subconsultas)
+
+INSERT INTO preco (id_medicamento, valor_medio) VALUES
+((SELECT id_medicamento FROM medicamento WHERE nome = 'Paracetamol'), 10.50),
+((SELECT id_medicamento FROM medicamento WHERE nome = 'Ibuprofeno'), 15.00),
+((SELECT id_medicamento FROM medicamento WHERE nome = 'Dipirona'), 8.00),
+((SELECT id_medicamento FROM medicamento WHERE nome = 'Amoxicilina'), 25.00),
+((SELECT id_medicamento FROM medicamento WHERE nome = 'Azitromicina'), 35.00),
+((SELECT id_medicamento FROM medicamento WHERE nome = 'Losartana'), 15.75),
+((SELECT id_medicamento FROM medicamento WHERE nome = 'Captopril'), 12.00),
+((SELECT id_medicamento FROM medicamento WHERE nome = 'Atenolol'), 18.00),
+((SELECT id_medicamento FROM medicamento WHERE nome = 'Metformina'), 20.00),
+((SELECT id_medicamento FROM medicamento WHERE nome = 'Insulina NPH'), 60.00),
+((SELECT id_medicamento FROM medicamento WHERE nome = 'Omeprazol'), 22.00),
+((SELECT id_medicamento FROM medicamento WHERE nome = 'Ranitidina'), 18.00),
+((SELECT id_medicamento FROM medicamento WHERE nome = 'Hidroclorotiazida'), 10.00),
+((SELECT id_medicamento FROM medicamento WHERE nome = 'Salbutamol'), 30.00),
+((SELECT id_medicamento FROM medicamento WHERE nome = 'Prednisona'), 16.00),
+((SELECT id_medicamento FROM medicamento WHERE nome = 'Fluoxetina'), 28.00),
+((SELECT id_medicamento FROM medicamento WHERE nome = 'Diazepam'), 14.00),
+((SELECT id_medicamento FROM medicamento WHERE nome = 'Ácido fólico'), 9.00),
+((SELECT id_medicamento FROM medicamento WHERE nome = 'Sulfato ferroso'), 11.00),
+((SELECT id_medicamento FROM medicamento WHERE nome = 'Benzilpenicilina'), 27.00);
+
+-- Exemplo de Relacionamento N:N (Tratamentos)
+INSERT INTO tratamento (id_medicamento, id_doenca) VALUES
+((SELECT id_medicamento FROM medicamento WHERE nome = 'Paracetamol'), (SELECT id_doenca FROM doenca WHERE nome = 'Dor e febre')),
+((SELECT id_medicamento FROM medicamento WHERE nome = 'Ibuprofeno'), (SELECT id_doenca FROM doenca WHERE nome = 'Inflamação e dor')),
+((SELECT id_medicamento FROM medicamento WHERE nome = 'Dipirona'), (SELECT id_doenca FROM doenca WHERE nome = 'Dor e febre')),
+((SELECT id_medicamento FROM medicamento WHERE nome = 'Amoxicilina'), (SELECT id_doenca FROM doenca WHERE nome = 'Infecção bacteriana'));
+
+-- 5. EXEMPLO DE PRESCRIÇÕES (Ponte Paciente x Medicamento)
+INSERT INTO prescricao (id_paciente, id_medicamento, dosagem) VALUES
+((SELECT id_paciente FROM paciente WHERE nome = 'Nicolas Caliel'), (SELECT id_medicamento FROM medicamento WHERE nome = 'Amoxicilina'), '500mg - 8/8h por 7 dias'),
+((SELECT id_paciente FROM paciente WHERE nome = 'Ana Silva Oliveira'), (SELECT id_medicamento FROM medicamento WHERE nome = 'Losartana'), '50mg - 1x ao dia');
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- CONSULTA FINAL DE CONFERÊNCIA
+SELECT 'Sucesso' AS Status, COUNT(*) AS Total_Medicamentos FROM medicamento;
