@@ -1,0 +1,31 @@
+=== PROJETO SUS MEDICAMENTOS ===
+
+LOGIN E SENHA DO BANCO JÁ CONFIGURADOS
+Usuário MySQL: root
+Senha MySQL: @Mayer0094
+
+PASSO A PASSO:
+
+1. INSTALE SE NÃO TIVER:
+   - Python 3.14: https://www.python.org/downloads/
+     MARQUE "Add Python to PATH" na instalação
+   - MySQL Community Server: https://dev.mysql.com/downloads/mysql/
+
+2. IMPORTE O BANCO:
+   - Abra MySQL Workbench
+   - Server > Data Import
+   - Import from Self-Contained File
+   - Selecione o arquivo 'backup_banco.sql' desta pasta
+   - Default Target Schema: New > digite 'sus_medicamentos' > OK
+   - Clique 'Start Import'
+
+3. DÊ 2 CLIQUES NO ARQUIVO: instalar_e_rodar.bat
+   Ele instala tudo sozinho e abre o site.
+
+DADOS DE ACESSO:
+Site Admin: http://127.0.0.1:8000/admin/
+Usuário Django: admin
+Senha Django: admin123
+
+Se der erro 'Access denied', sua senha do MySQL é diferente de @Mayer0094.
+Nesse caso abra sus_web_app\settings.py e troque a PASSWORD.
